@@ -1,0 +1,7 @@
+User-agent: *
+
+Allow: /
+
+Disallow: /quantuartslab.co.za/check-out
+ 
+Sitemap: https://quantuartslab.co.za/sitemap.xml

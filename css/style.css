@@ -738,7 +738,7 @@ textarea.form-control {
 }
 
 
-.input-wrap .success input{
+.input-wrap .success {
     border-color: green;
 }
   
@@ -747,7 +747,7 @@ textarea.form-control {
 }
   
 .input-wrap  .error {
-    color: #262338 !important;
+    color: #df0909 !important;
     font-size: .8rem;
     height: 13px;
 }

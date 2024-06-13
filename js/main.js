@@ -269,154 +269,226 @@ window.onload = function() {
 
 
 // FORM SUBMIT
-const form = document.getElementById('form');
-const name = document.getElementById('name');
-const email = document.getElementById('email');
-const message = document.getElementById('message');
-// const service = document.getElementById('form-select');
-
-
-if (form) {
-    form.addEventListener('submit', (event)=>{
-    
-        validateInputs();
-        console.log(isFormValid());
-        if(isFormValid()==true){
-            sendEmail();
-            form.reset();
-         }else {
-            event.preventDefault();  
-         }
-    
-         return false;
-    
-    });
-}
-
-
-function isFormValid(){
-    const inputContainers = form.querySelectorAll('.input-wrap');
-    let result = true;
-    inputContainers.forEach((container)=>{
-        if(container.classList.contains('error')){
-            result = false;
-        }
-    });
-    return result;
-}
-
-
-// ERROR
-const setError = (element, message) => {
-    const inputControl = element.parentElement;
-    const errorDisplay = inputControl.querySelector('.error');
-
-    errorDisplay.innerText = message;
-    inputControl.classList.add('error');
-    inputControl.classList.remove('success')
-}
-
-// SUCCESS
-const setSuccess = element => {
-    const inputControl = element.parentElement;
-    const errorDisplay = inputControl.querySelector('.error');
-
-    errorDisplay.innerText = '';
-    inputControl.classList.add('success');
-    inputControl.classList.remove('error');
-};
-
-//EMAIL FORMAT
-const isValidEmail = email => {
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-}
-
-//VALIDATING FORM
-const validateInputs = () => {
-    const nameValue = name.value.trim();
-    const emailValue = email.value.trim();
-    const messageValue = message.value.trim();
-   
-    if(nameValue === '') {
-        setError(name, 'Your name or company name is required');
-    } else {
-        setSuccess(name);
-    }
-
-    if(emailValue === '') {
-        setError(email, 'Email is required');
-    } else if (!isValidEmail(emailValue)) {
-        setError(email, 'Provide a valid email address');
-    } else {
-        setSuccess(email);
-    }
-
-    if(messageValue === '') {
-        setError(message, 'Please write your message');
-    } else if (messageValue.length  < 5 ) {
-        setError(message, "Please write a longer message");
-    } else {
-        setSuccess(message);
-    }
-
-};
-
-
-
-function sendEmail() {
-    // Get the values from the form inputs
-    var nameValue = document.getElementById('name').value.trim();
-    var emailValue = document.getElementById('email').value.trim();
-    var messageValue = document.getElementById('message').value.trim();
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('form');
   
-    // Check if all fields are filled
-    if(nameValue && emailValue && messageValue) {
-      // Create a FormData object and append the form values
-      var formData = new FormData();
-      formData.append('name', nameValue);
-      formData.append('email', emailValue);
-      formData.append('message', messageValue);
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      if(validateInputs()){
+          sendEmail();
+      }
+    });
   
-      // Send the form data to 'sendmail.php'
-      fetch('sendmail.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if(data.success) {
-          // Show success message using SweetAlert2
-          Swal.fire({
-            title: 'Success!',
-            text: 'Your message has been sent.',
-            icon: 'success'
-          });
-          form.reset();
+    function validateInputs(){
+      var name = document.getElementById('name');
+      var email = document.getElementById('email');
+      var message = document.getElementById('message');
+      var subject = document.getElementById('subject');
+      
+      var nameValue = name.value.trim();
+      var emailValue = email.value.trim();
+      var subjectValue = subject.value.trim();
+      var messageValue = message.value.trim();
+      
+      let isFormValid = true;
+      
+      // name validation
+      if(nameValue === '') {
+          setError(name, 'Your name or company name is required');
+          isFormValid = false;
+      } else {
+          setSuccess(name);
+      }
+  
+      // Email validation
+      if(emailValue === '') {
+          setError(email, 'Email is required');
+          isFormValid = false;
+      } else if (!isValidEmail(emailValue)) {
+          setError(email, 'Provide a valid email address');
+          isFormValid = false;
+      } else {
+          setSuccess(email);
+      }
+  
+        // subject validation
+        if(subjectValue === '') {
+            setError(subject, 'Please write your subject');
+            isFormValid = false;
         } else {
+            setSuccess(subject);
+        }
+  
+      // Message validation
+      if(messageValue === '') {
+          setError(message, 'Please write your message');
+          isFormValid = false;
+      } else if (messageValue.length < 5 ) {
+          setError(message, "Please write a longer message");
+          isFormValid = false;
+      } else {
+          setSuccess(message);
+      }
+      
+      return isFormValid && checkInputContainers();
+    }
+  
+    function checkInputContainers(){
+      const inputContainers = form.querySelectorAll('.input-wrap');
+      let result = true;
+      inputContainers.forEach((container)=>{
+          if(container.classList.contains('error')){
+              result = false;
+          }
+      });
+      return result;
+    }
+  
+    // ERROR
+    const setError = (element, message) => {
+      const inputControl = element.parentElement;
+      const errorDisplay = inputControl.querySelector('.error');
+  
+      errorDisplay.innerText = message;
+      inputControl.classList.add('error');
+      inputControl.classList.remove('success');
+    }
+  
+    // SUCCESS
+    const setSuccess = element => {
+      const inputControl = element.parentElement;
+      const errorDisplay = inputControl.querySelector('.error');
+  
+      errorDisplay.innerText = '';
+      inputControl.classList.add('success');
+      inputControl.classList.remove('error');
+    };
+  
+    // EMAIL FORMAT
+    const isValidEmail = email => {
+      const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(String(email).toLowerCase());
+    }
+  
+    function sendEmail() {
+      // Get the values from the form inputs
+      var nameValue = document.getElementById('name').value.trim();
+      var emailValue = document.getElementById('email').value.trim();
+      var subjectValue = document.getElementById('subject').value.trim();
+      var messageValue = document.getElementById('message').value.trim();
+  
+      // Check if all fields are filled
+      if(nameValue && emailValue && messageValue) {
+        // Create a FormData object and append the form values
+        var formData = new FormData();
+        formData.append('name', nameValue);
+        formData.append('email', emailValue);
+        formData.append('subject', subjectValue);
+        formData.append('message', messageValue);
+  
+        // Send the form data to 'sendmail.php'
+        fetch('sendmail.php', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.success) {
+            // Show success message using SweetAlert2
+            Swal.fire({
+                icon: 'success',
+                html: '<p class="sweetAlert">Your message has been sent</p>',
+                timer: 4000,
+                showConfirmButton: false,
+                showClass: {
+                popup: `
+                    animate__animated
+                    animate__zoomIn
+                    animate__faster
+                `
+                },
+                hideClass: {
+                popup: `
+                    animate__animated
+                    animate__zoomOut
+                    animate__faster
+                `
+                }
+            })
+            form.reset();
+          } else {
+            // Show error message
+            Swal.fire({
+            icon: 'error',
+            html: '<p class="sweetAlert">There was an error sending your message</p>',
+            timer: 4000,
+            showConfirmButton: false,
+            showClass: {
+            popup: `
+                animate__animated
+                animate__zoomIn
+                animate__faster
+            `
+            },
+            hideClass: {
+            popup: `
+                animate__animated
+                animate__zoomOut
+                animate__faster
+            `
+            }
+        })
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
           // Show error message
           Swal.fire({
-            title: 'Error!',
-            text: 'There was an issue sending your message.',
-            icon: 'error'
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        // Show error message
-        Swal.fire({
-          title: 'Error!',
-          text: 'There was an issue sending your message.',
-          icon: 'error'
+            icon: 'error',
+            html: '<p class="sweetAlert">There was an error sending your message</p>',
+            timer: 4000,
+            showConfirmButton: false,
+            showClass: {
+            popup: `
+                animate__animated
+                animate__zoomIn
+                animate__faster
+            `
+            },
+            hideClass: {
+            popup: `
+                animate__animated
+                animate__zoomOut
+                animate__faster
+            `
+            }
+        })
         });
-      });
-    } else {
-      // If any field is empty, show an error
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please fill all the fields.',
-        icon: 'error'
-      });
+      } else {
+        // If any field is empty, show an error
+        Swal.fire({
+            icon: 'error',
+            html: '<p class="sweetAlert">Please fill all the fields.</p>',
+            timer: 4000,
+            showConfirmButton: false,
+            showClass: {
+            popup: `
+                animate__animated
+                animate__zoomIn
+                animate__faster
+            `
+            },
+            hideClass: {
+            popup: `
+                animate__animated
+                animate__zoomOut
+                animate__faster
+            `
+            }
+        })
+  
+      }
     }
-  }
+  });
+  
